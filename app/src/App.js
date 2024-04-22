@@ -1,21 +1,33 @@
-import Bottone from './Bottone';
+import Alunno from './Alunno';
 import './App.css';
-
-const alunni = [
-  {id: 1, nome: 'Mario', cognome: 'Rossi'},
-  {id: 2, nome: 'Giuseppe', cognome: 'Verdi'},
-  {id: 3, nome: 'Luigi', cognome: 'Bianchi'},
-];
+import {useEffect, useState} from 'react';
+//import loading from './200.gif';
 
 function App() {
+  const [alunni, setAlunni] = useState([]);
+
+  const[inCaricamento, setInCaricamento] = useState(false);
+
+  useEffect(() => {
+    loadAlunni();
+  }, []);
+
+async function loadAlunni(){
+  setInCaricamento(true);
+  const response = await fetch('http://localhost:8080/alunni', {method:"GET"});
+  const a = await response.json();
+  setAlunni(a);
+  setInCaricamento(false);
+};
+
   return (
     <div className="App">
-      {
+      { 
+        inCaricamento ?
+        <div><img src='./500.gif' alt='loading'/></div>
+      :
         alunni.map((alunno) => (
-          <Bottone 
-          testo = {`${alunno.nome} ${alunno.cognome} `}
-          numero = {alunno.id}
-          />
+          <Alunno alunno = {alunno} loadAlunni={loadAlunni} key={alunno.id}/>
         ))
       }
     </div>
